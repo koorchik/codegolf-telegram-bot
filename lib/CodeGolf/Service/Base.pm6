@@ -4,11 +4,13 @@ LIVR::Validator.default-auto-trim(True);
 use CodeGolf::Service::X::ValidationError;
 use CodeGolf::Service::X::NotEnoughPermissions;
 
+subset UserRole where * eq "USER"|"ADMIN";
+
 class CodeGolf::Service::Base {
     has $.storage is required;
     has $.user-id is required;
     has $.session-id is required;
-    has $.user-role is required;
+    has UserRole $.user-role is required;
 
     method run(%params) {
         "CodeGolf::Service::Base:run {%params.gist}".say;
