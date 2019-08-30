@@ -25,11 +25,11 @@ class CodeGolf::Storage {
           CREATE TABLE IF NOT EXISTS results (
               id          INTEGER PRIMARY KEY,
               golf_id     INTEGER NOT NULL,
-              session_id  INTEGER NOT NULL,
+              user_id  INTEGER NOT NULL,
               code_length INTEGER NOT NULL,
               submited_at TEXT NOT NULL,
               FOREIGN KEY(golf_id) REFERENCES golfs(id)
-              FOREIGN KEY(session_id) REFERENCES sessions(id)
+              FOREIGN KEY(user_id) REFERENCES users(id)
           )
       STATEMENT
     }
@@ -84,7 +84,30 @@ class CodeGolf::Storage {
         return $sth.row(:hash);
     }
 
-    method save-result( Str :$golf-id, Str :$user-id, Str :$code ) {
+    method insert-result(
+        Int :$golf-id,
+        Int :$user-id,
+        Str :$code
+    ) {
+        my $sth = $.dbh.prepare(q:to/STATEMENT/);
+            INSERT INTO results (golf_id, user_id, code_length, submited_at)
+            VALUES ( ?, ?, ?, DateTime('now') )
+        STATEMENT
+        $sth.execute($golf-id, $user-id, $code.chars);
 
+        $sth = $.dbh.prepare(q:to/STATEMENT/);
+            SELECT last_insert_rowid()
+        STATEMENT
+        $sth.execute();
+        return $sth.row()[0];
+    }
+
+    method find-result(Int $id!) {
+        my $sth = $.dbh.prepare(q:to/STATEMENT/);
+            SELECT * FROM results WHERE id=?
+        STATEMENT
+
+        $sth.execute($id);
+        return $sth.row(:hash);
     }
 }
