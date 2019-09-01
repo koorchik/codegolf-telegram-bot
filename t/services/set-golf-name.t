@@ -2,16 +2,19 @@ use lib 'lib';
 
 use Test;
 use Test::CodeGolf::Utils;
-use CodeGolf::Service::StartGolf;
+use Test::CodeGolf::Factory;
 
-my $storage = get-tmp-storage();
+use CodeGolf::Service::SetGolfName;
+
+my $factory = Test::CodeGolf::Factory.new();
+$factory.setup-golf();
 
 sub run-my-service(%params, %context = {}) {
-      my $service = CodeGolf::Service::StartGolf.new(
+      my $service = CodeGolf::Service::SetGolfName.new(
           user-id    => 'koorchik',
           session-id => 'aaaa',
           user-role  => 'ADMIN',
-          storage    => $storage,
+          storage    => $factory.storage,
           |%context
       );
 
@@ -19,13 +22,9 @@ sub run-my-service(%params, %context = {}) {
 }
 
 subtest {
-    my %golf = run-my-service({name => 'MyTestGolf'});
+    my %golf = run-my-service({name => 'MyGolfNewName'});
 
-    is %golf<name>, 'MyTestGolf', "Golf name is set";
-    isa-ok %golf<id>, Int, "Golf id is Int";
-    ok %golf<is_active>, "Golf is active";
-    ok %golf<started_at>, "Golf has started_at";
-
+    is %golf<name>, 'MyGolfNewName', "Golf name is set";
 }, "Positive: should return new golf";
 
 

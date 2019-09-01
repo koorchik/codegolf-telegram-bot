@@ -13,7 +13,6 @@ class CodeGolf::Service::Base {
     has UserRole $.user-role is required;
 
     method run(%params) {
-        "CodeGolf::Service::Base:run {%params.gist}".say;
         self.check-permissions();
         return self.execute( self.validate(%params) );
     }

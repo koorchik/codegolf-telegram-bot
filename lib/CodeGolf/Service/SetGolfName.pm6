@@ -1,7 +1,7 @@
 use CodeGolf::Service::Base;
 
 class CodeGolf::Service::SetGolfName is CodeGolf::Service::Base {
-    has @.allowed-roles = 'ADMIN', 'USER';
+    has @.allowed-roles = 'ADMIN';
 
     has %.validation-rules = {
         name => ["required", "string", {max_length => 128}]
