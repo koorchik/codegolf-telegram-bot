@@ -8,6 +8,7 @@ subset UserRole where * eq "USER"|"ADMIN";
 
 class CodeGolf::Service::Base {
     has $.storage is required;
+    has $.tester is required;
     has $.user-id is required;
     has $.session-id is required;
     has UserRole $.user-role is required;

@@ -15,6 +15,7 @@ sub run-my-service(%params, %context = {}) {
           session-id => 'aaaa',
           user-role  => 'ADMIN',
           storage    => $factory.storage,
+          tester     => get-nodejs-tester,
           |%context
       );
 

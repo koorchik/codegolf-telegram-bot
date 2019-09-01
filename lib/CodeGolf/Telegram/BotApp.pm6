@@ -1,5 +1,6 @@
 use Telegram;
 use CodeGolf::Storage;
+use CodeGolf::Tester;
 use CodeGolf::Telegram::ServiceDispatcher;
 
 my %COMMANDS =
@@ -36,17 +37,21 @@ my %COMMANDS =
 class CodeGolf::Telegram::BotApp {
     has $.telegram-bot-token is required;
     has @.golf-admins is required;
-    # has $.tests-docker-image is required;
+    has $.tests-docker-image is required;
 
     has $!storage = CodeGolf::Storage.new();
+    has $!tester = CodeGolf::Tester.new( docker-image => $!tests-docker-image );
+
     has $!dispatcher = CodeGolf::Telegram::ServiceDispatcher.new(
         telegram-bot-token => $!telegram-bot-token,
         commands           => %COMMANDS,
         context-builder    => sub ($msg) {
            return {
               storage    => $!storage,
+              tester     => $!tester,
               user-id    => $msg.sender.username,
               user-role  => 'ADMIN',
+
               session-id => $msg.chat.id,
            };
         }

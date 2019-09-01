@@ -8,10 +8,8 @@ class CodeGolf::Service::SetGolfName is CodeGolf::Service::Base {
     };
 
     method execute(%params) {
-        my %golf = self.storage.find-active-golf();
-
-        self.storage.update-golf( %golf<id>, { name => %params<name> } );
-
-        return %golf;
+        my %golf = $.storage.find-active-golf();
+        $.storage.update-golf( %golf<id>, { name => %params<name> } );
+        return $.storage.find-active-golf();
     }
 }

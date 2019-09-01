@@ -4,7 +4,7 @@ use CodeGolf::Telegram::BotApp;
 
 my $token = '';
 my @golf-admins = ('koorchik');
-my $tests-docker-image = 'node:12';
+my $tests-docker-image = 'node:12-alpine';
 
 my $golfbot = CodeGolf::Telegram::BotApp.new(
     telegram-bot-token => $token,

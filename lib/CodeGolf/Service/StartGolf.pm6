@@ -8,11 +8,9 @@ class CodeGolf::Service::StartGolf is CodeGolf::Service::Base {
     };
 
     method execute(%params) {
-        my $storage = self.storage;
-
-        my $id = $storage.insert-golf(name => %params<name>);
-        $storage.activate-golf($id);
-        my %golf = $storage.find-golf($id);
+        my $id = $.storage.insert-golf(name => %params<name>);
+        $.storage.activate-golf($id);
+        my %golf = $.storage.find-golf($id);
 
         return %golf;
     }
