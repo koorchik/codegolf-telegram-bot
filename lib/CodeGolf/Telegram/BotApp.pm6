@@ -27,7 +27,7 @@ my %COMMANDS =
         params-rx     => rx/"/"\w+\s+ $<url>=[.*] \s*/
     },
     'ratingsWithSources' => {
-        service-class => 'CodeGolf::Service::ShowRatingWithScores'
+        service-class => 'CodeGolf::Service::ShowRatingWithSources'
     },
     'notifyHere' => {
         service-class => 'CodeGolf::Service::BindNotificatorToCurrentSession'

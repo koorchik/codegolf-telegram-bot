@@ -27,6 +27,7 @@ class CodeGolf::Storage {
               id          INTEGER PRIMARY KEY,
               golf_id     INTEGER NOT NULL,
               user_id     TEXT NOT NULL,
+              source_code TEXT NOT NULL,
               code_length INTEGER NOT NULL,
               submited_at TEXT NOT NULL,
               FOREIGN KEY(golf_id) REFERENCES golfs(id)
@@ -74,7 +75,7 @@ class CodeGolf::Storage {
         STATEMENT
 
         $sth.execute($id);
-        return $sth.row(:hash);
+        return self!u2d-hash( $sth.row(:hash) );
     }
 
     method find-active-golf {
@@ -83,19 +84,19 @@ class CodeGolf::Storage {
         STATEMENT
 
         $sth.execute();
-        return $sth.row(:hash);
+        return self!u2d-hash( $sth.row(:hash) );
     }
 
     method insert-result(
         Int :$golf-id,
         Str :$user-id,
-        Str :$code
+        Str :$source-code
     ) {
         my $sth = $!dbh.prepare(q:to/STATEMENT/);
-            INSERT INTO results (golf_id, user_id, code_length, submited_at)
-            VALUES ( ?, ?, ?, DateTime('now') )
+            INSERT INTO results (golf_id, user_id, source_code, code_length, submited_at)
+            VALUES ( ?, ?, ?, ?, DateTime('now') )
         STATEMENT
-        $sth.execute($golf-id, $user-id, $code.chars);
+        $sth.execute($golf-id, $user-id, $source-code, $source-code.chars);
 
         $sth = $!dbh.prepare(q:to/STATEMENT/);
             SELECT last_insert_rowid()
@@ -110,6 +111,36 @@ class CodeGolf::Storage {
         STATEMENT
 
         $sth.execute($id);
-        return $sth.row(:hash);
+        return self!u2d-hash( $sth.row(:hash) );
+    }
+
+    method find-golf-results(Int $golf-id!) {
+        my $sth = $!dbh.prepare(q:to/STATEMENT/);
+            SELECT * FROM results WHERE golf_id=?
+        STATEMENT
+
+        $sth.execute($golf-id);
+        return self!u2d-array-of-hash( $sth.allrows(:array-of-hash) );
+    }
+
+    method !u2d-hash(%hash) {
+        my %new-hash;
+
+        for %hash.kv -> $key, $value {
+            %new-hash{ $key.subst("_", "-", :g) } = $value;
+        }
+
+        return %new-hash;
+    }
+
+
+    method !u2d-array-of-hash(@array) {
+        my @new-array;
+
+        for @array -> %hash {
+            @new-array.push( self!u2d-hash(%hash) )
+        }
+
+        return @new-array;
     }
 }

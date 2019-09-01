@@ -39,6 +39,6 @@ subtest {
 subtest {
     throws-like { run-my-service({}, { user-role => 'USER' }) },
         CodeGolf::Service::X::NotEnoughPermissions;
-}, "Negative: USER not allowed to call use service";
+}, "Negative: USER not allowed to use this service";
 
 done-testing;

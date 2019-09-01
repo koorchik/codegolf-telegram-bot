@@ -20,8 +20,9 @@ class CodeGolf::Service::Base {
 
     method validate(%params) {
         my $validator = LIVR::Validator.new(livr-rules => %.validation-rules);
+        my $valid-params = $validator.validate(%params);
 
-        if my $valid-params = $validator.validate(%params) {
+        if $valid-params.defined {
             return $valid-params;
         } else {
             CodeGolf::Service::X::ValidationError.new(

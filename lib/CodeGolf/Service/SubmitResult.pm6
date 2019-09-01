@@ -21,12 +21,21 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
 
         my %golf = $.storage.find-active-golf();
         my $result-id = $.storage.insert-result(
-            golf-id => %golf<id>,
-            user-id => $.user-id,
-            code    => %params<source-code>
+            golf-id     => %golf<id>,
+            user-id     => $.user-id,
+            source-code => %params<source-code>
         );
 
-        return $.storage.find-result($result-id);
+        my %result = $.storage.find-result($result-id);
+
+        return {
+            id          => %result<id>,
+            golf-id     => %result<golf-id>,
+            user-id     => %result<user-id>,
+            code-length => %result<code-length>,
+            submited-at => %result<submited-at>,
+            source-code => %result<source-code>
+        };
 
         CATCH {
             when CodeGolf::Tester::X {
@@ -35,6 +44,9 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
                     source-code => 'TESTING_FAILED'
                   }
               ).throw;
+            }
+            default {
+                die $_;
             }
         }
 

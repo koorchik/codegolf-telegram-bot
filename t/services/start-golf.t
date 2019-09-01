@@ -24,8 +24,8 @@ subtest {
 
     is %golf<name>, 'MyTestGolf', "Golf name is set";
     isa-ok %golf<id>, Int, "Golf id is Int";
-    ok %golf<is_active>, "Golf is active";
-    ok %golf<started_at>, "Golf has started_at";
+    ok %golf<is-active>, "Golf is active";
+    ok %golf<started-at>, "Golf has started-at";
 
 }, "Positive: should return new golf";
 
@@ -40,6 +40,6 @@ subtest {
 subtest {
     throws-like { run-my-service({}, { user-role => 'USER' }) },
         CodeGolf::Service::X::NotEnoughPermissions;
-}, "Negative: USER not allowed to call use service";
+}, "Negative: USER not allowed to use this service";
 
 done-testing;

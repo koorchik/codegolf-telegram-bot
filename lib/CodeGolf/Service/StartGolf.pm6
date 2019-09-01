@@ -12,6 +12,12 @@ class CodeGolf::Service::StartGolf is CodeGolf::Service::Base {
         $.storage.activate-golf($id);
         my %golf = $.storage.find-golf($id);
 
-        return %golf;
+        return {
+            id          => %golf<id>,
+            name        => %golf<name>,
+            is-active   => %golf<is-active>,
+            started-at  => %golf<started-at>,
+            finished-at => %golf<finished-at>
+        };
     }
 }

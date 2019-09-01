@@ -10,6 +10,14 @@ class CodeGolf::Service::SetGolfName is CodeGolf::Service::Base {
     method execute(%params) {
         my %golf = $.storage.find-active-golf();
         $.storage.update-golf( %golf<id>, { name => %params<name> } );
-        return $.storage.find-active-golf();
+        my %updated-golf = $.storage.find-active-golf();
+
+        return {
+            id          => %updated-golf<id>,
+            name        => %updated-golf<name>,
+            is-active   => %updated-golf<is-active>,
+            started-at  => %updated-golf<started-at>,
+            finished-at => %updated-golf<finished-at>
+        };
     }
 }
