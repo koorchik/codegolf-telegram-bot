@@ -13,11 +13,17 @@ class CodeGolf::Tester {
         for @tests -> $test {
             self!run-test($source-code, $test<input>, $test<expected>);
         }
+
+        return True;
     }
 
     method !run-test(Str $source-code, Str $input, Str $expected) {
         my $filename = self!save-code-to-tmp-file($source-code);
-        my $got = self!run-file($filename, $input);
+        my %result = self!run-file($filename, $input);
+
+        my $got = %result<err> && !%result<out>
+          ?? %result<err>
+          !! %result<out>;
 
         if $got ne $expected {
             CodeGolf::Tester::X.new(
@@ -39,8 +45,6 @@ class CodeGolf::Tester {
     }
 
     method !run-file(Str $filename, Str $input) {
-        "run-file $input".say;
-
         my @command = 'docker',
             'run',
             '--rm',
@@ -52,7 +56,12 @@ class CodeGolf::Tester {
             $input;
 
         # // TODO: Add timeouts
-        my $proc = run @command, :out;
-        return $proc.out.slurp;
+        my $proc = run @command, :out, :err;
+
+        return {
+            out => $proc.out.slurp,
+            err => $proc.err.slurp
+        };
+
     }
 }
