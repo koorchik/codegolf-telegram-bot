@@ -37,8 +37,7 @@ class CodeGolf::Storage {
 
     method insert-golf(Str :$name!) {
         my $sth = $!dbh.prepare(q:to/STATEMENT/);
-              INSERT INTO golfs (name)
-            VALUES ( ? )
+            INSERT INTO golfs (name) VALUES ( ? )
         STATEMENT
         $sth.execute($name);
 
@@ -124,23 +123,10 @@ class CodeGolf::Storage {
     }
 
     method !u2d-hash(%hash) {
-        my %new-hash;
-
-        for %hash.kv -> $key, $value {
-            %new-hash{ $key.subst("_", "-", :g) } = $value;
-        }
-
-        return %new-hash;
+        return %hash.kv.map( *.subst('_', '-', :g) => * ).hash;
     }
 
-
     method !u2d-array-of-hash(@array) {
-        my @new-array;
-
-        for @array -> %hash {
-            @new-array.push( self!u2d-hash(%hash) )
-        }
-
-        return @new-array;
+        return @array.map({ self!u2d-hash(%^a) });
     }
 }

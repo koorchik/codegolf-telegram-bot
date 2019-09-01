@@ -4,12 +4,12 @@ class Test::CodeGolf::Factory {
     has $.storage = get-tmp-storage();
 
     method setup-golf {
-        my $id = $!storage.insert-golf(name => 'MyGolf');
+        my $id = $.storage.insert-golf(name => 'MyGolf');
         $.storage.activate-golf($id);
     }
 
     method setup-results {
-        my %golf = $!storage.find-active-golf();
+        my %golf = $.storage.find-active-golf();
 
         my @samples = (
             { user-id => 'mykola', source-code => 'console.log(1);console.log(2);console.log(3)'},

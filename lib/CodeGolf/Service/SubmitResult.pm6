@@ -1,8 +1,6 @@
 use CodeGolf::Service::Base;
 use CodeGolf::Tester;
-use JSON::Tiny;
 use CodeGolf::Service::X::ValidationError;
-
 
 class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
     has @.allowed-roles = 'ADMIN', 'USER';
@@ -50,7 +48,7 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
             }
         }
 
-        # self.notificator.notify('CHANGES_IN_RATING', {
+        # $.notificator.notify('CHANGES_IN_RATING', {
         #   user-id  => 'koorchik'
         # });
         # $self.notificator.notifyUpdatedScores();
