@@ -23,11 +23,31 @@ sub run-my-service(%params, %context = {}) {
 }
 
 subtest {
-    my %golf = run-my-service({source-code => 'console.log(process.argv[2]*2)'});
-    "RESULT {%golf.gist}".say;
+    my %result = run-my-service({source-code => 'console.log(process.argv[2]*2)'});
+
+    is %result<user_id>, 'koorchik', "User ID is set";
+    is %result<code_length>, 30, "Code length is computed";
+
+    isa-ok %result<id>, Int, "Result ID is Int";
+    isa-ok %result<golf_id>, Int, "Golf ID is Int";
+
+    ok %result<submited_at>, "Result has submited_at";
 }, "Positive: should return new golf";
 
-#
+
+subtest {
+    throws-like { run-my-service({source-code => 'console.log(process.argv[2]*3)'}) },
+         CodeGolf::Service::X::ValidationError,
+         errors => {source-code => 'TESTING_FAILED'};
+}, "Negative: wrong output";
+
+subtest {
+    throws-like { run-my-service({source-code => 'not a code'}) },
+         CodeGolf::Service::X::ValidationError,
+        errors => {source-code => 'TESTING_FAILED'};
+}, "Negative: syntax error";
+
+
 # subtest {
 #     throws-like { run-my-service({}) },
 #         CodeGolf::Service::X::ValidationError,

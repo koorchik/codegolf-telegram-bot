@@ -18,28 +18,29 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
         );
 
         $.tester.run-all-tests(%params<source-code>, @tests);
-        # $.storage.insert-result();  #TODO
 
+        my %golf = $.storage.find-active-golf();
+        my $result-id = $.storage.insert-result(
+            golf-id => %golf<id>,
+            user-id => $.user-id,
+            code    => %params<source-code>
+        );
+
+        return $.storage.find-result($result-id);
 
         CATCH {
-            CodeGolf::Service::X::ValidationError.new(
-                errors => {
-                  source-code => 'TEST_FAILED'
-                }
-            ).throw;
+            when CodeGolf::Tester::X {
+              CodeGolf::Service::X::ValidationError.new(
+                  errors => {
+                    source-code => 'TESTING_FAILED'
+                  }
+              ).throw;
+            }
         }
+
         # self.notificator.notify('CHANGES_IN_RATING', {
         #   user-id  => 'koorchik'
         # });
-
-        return {
-            "Top Players" => [
-                {user-id => "koorchik", length => 22},
-                {user-id => "koorchik", length => 33},
-                {user-id => "koorchik", length => 55}
-            ]
-        };
-
         # $self.notificator.notifyUpdatedScores();
     }
 }
