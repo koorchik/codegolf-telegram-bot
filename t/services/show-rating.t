@@ -12,11 +12,12 @@ $factory.setup-results();
 
 sub run-my-service(%params = {}, %context = {}) {
       my $service = CodeGolf::Service::ShowRating.new(
-          user-id    => 'koorchik',
-          session-id => 'aaaa',
-          user-role  => 'USER',
-          storage    => $factory.storage,
-          tester     => get-nodejs-tester,
+          user-id     => 'koorchik',
+          session-id  => 'aaaa',
+          user-role   => 'USER',
+          storage     => $factory.storage,
+          notificator => get-notificator-mock($factory.storage, my $bot),
+          tester      => get-nodejs-tester,
           |%context
       );
 

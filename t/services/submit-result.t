@@ -9,13 +9,16 @@ use CodeGolf::Service::SubmitResult;
 my $factory = Test::CodeGolf::Factory.new();
 $factory.setup-golf();
 
+my $bot;
+
 sub run-my-service(%params, %context = {}) {
       my $service = CodeGolf::Service::SubmitResult.new(
-          user-id    => 'koorchik',
-          session-id => 'aaaa',
-          user-role  => 'ADMIN',
-          storage    => $factory.storage,
-          tester     => get-nodejs-tester,
+          user-id     => 'koorchik',
+          session-id  => 'aaaa',
+          user-role   => 'ADMIN',
+          storage     => $factory.storage,
+          notificator => get-notificator-mock($factory.storage, $bot),
+          tester      => get-nodejs-tester,
           |%context
       );
 
@@ -37,6 +40,24 @@ subtest {
 
 
 subtest {
+    run-my-service(
+        {source-code => '"SOME EXTRA CODE";console.log(process.argv[2]*2)'},
+        {user-id => 'userForNotifTest'}
+    );
+
+    like $bot.last-message, rx/"userForNotifTest"/, "Shoud contain name of the user";
+    like $bot.last-message, rx/"NEW"/, "Shoud contain 'NEW'";
+
+    run-my-service(
+        {source-code => 'console.log(process.argv[2]*2)'},
+        {user-id => 'userForNotifTest'}
+    );
+
+    like $bot.last-message, rx/"userForNotifTest"/, "Shoud contain name of the user";
+    like $bot.last-message, rx/"was"/, "Shoud contain 'was'";
+}, "Positive: should notify-changes";
+
+subtest {
     throws-like { run-my-service({source-code => 'console.log(process.argv[2]*3)'}) },
          CodeGolf::Service::X::ValidationError,
          errors => {source-code => 'TESTING_FAILED'};
@@ -48,17 +69,5 @@ subtest {
         errors => {source-code => 'TESTING_FAILED'};
 }, "Negative: syntax error";
 
-
-# subtest {
-#     throws-like { run-my-service({}) },
-#         CodeGolf::Service::X::ValidationError,
-#         errors => {name => 'REQUIRED'};
-# }, "Negative: should require name";
-#
-#
-# subtest {
-#     throws-like { run-my-service({}, { user-role => 'USER' }) },
-#         CodeGolf::Service::X::NotEnoughPermissions;
-# }, "Negative: USER not allowed to call use service";
 
 done-testing;

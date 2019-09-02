@@ -33,6 +33,16 @@ class CodeGolf::Storage {
               FOREIGN KEY(golf_id) REFERENCES golfs(id)
           )
       STATEMENT
+
+
+      $!dbh.do(q:to/STATEMENT/);
+          CREATE TABLE IF NOT EXISTS settings (
+              id          INTEGER PRIMARY KEY,
+              type        TEXT NOT NULL,
+              key         TEXT NOT NULL,
+              value       TEXT NOT NULL
+          )
+      STATEMENT
     }
 
     method insert-golf(Str :$name!) {
@@ -120,6 +130,33 @@ class CodeGolf::Storage {
 
         $sth.execute($golf-id);
         return self!u2d-array-of-hash( $sth.allrows(:array-of-hash) );
+    }
+
+    method save-notificator-setting(%settings) {
+        my $sth = $!dbh.prepare(q:to/STATEMENT/);
+            REPLACE INTO settings (type, key, value)
+            VALUES ('NOTIFICATOR', ?, ?)
+        STATEMENT
+
+        for %settings.kv -> $k, $v {
+            $sth.execute($k, $v);
+        }
+    }
+
+    method load-notificator-setting() {
+        my $sth = $!dbh.prepare(q:to/STATEMENT/);
+            SELECT * FROM settings WHERE type='NOTIFICATOR'
+        STATEMENT
+
+        $sth.execute();
+        my @rows = $sth.allrows(:array-of-hash);
+
+        my %settings;
+        for @rows -> $row {
+            %settings{$row<key>} = $row<value>;
+        }
+
+        return %settings;
     }
 
     method !u2d-hash(%hash) {

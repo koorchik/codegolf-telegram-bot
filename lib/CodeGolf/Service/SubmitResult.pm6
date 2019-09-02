@@ -25,6 +25,7 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
         );
 
         my %result = $.storage.find-result($result-id);
+        $.notificator.notify-changes-in-rating(user-id => $.user-id);
 
         return {
             id          => %result<id>,
@@ -47,10 +48,5 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
                 die $_;
             }
         }
-
-        # $.notificator.notify('CHANGES_IN_RATING', {
-        #   user-id  => 'koorchik'
-        # });
-        # $self.notificator.notifyUpdatedScores();
     }
 }

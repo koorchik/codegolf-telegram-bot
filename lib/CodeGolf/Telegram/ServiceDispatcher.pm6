@@ -1,40 +1,37 @@
-use Telegram;
 use CodeGolf::Service::X::Base;
 
 class CodeGolf::Telegram::ServiceDispatcher {
-    has $.telegram-bot-token is required;
+    has $.bot is required;
     has %.commands is required;
     has &.context-builder is required;
 
-    has $!bot = Telegram::Bot.new($!telegram-bot-token);
-
     method start() {
-        $!bot.start(interval => 1);
+        $.bot.start(interval => 1);
 
         react {
-            whenever $!bot.messagesTap -> $msg {
+            whenever $.bot.messagesTap -> $msg {
                 my $result = self!dispatch($msg);
 
                 if $result {
                     my $text = self!url-escape($result);
-                    $!bot.sendMessage(chat_id => $msg.chat.id, text => $text);
+                    $.bot.sendMessage(chat_id => $msg.chat.id, text => $text);
                 }
 
                 CATCH {
                     when CodeGolf::Service::X::Base {
                         my $text = self!url-escape(.message);
-                        $!bot.sendMessage(chat_id => $msg.chat.id, text => $text);
+                        $.bot.sendMessage(chat_id => $msg.chat.id, text => $text);
                     }
                     default {
                         say "Server error happened";
                         .message.say;
                         my $text = self!url-escape(.message);
-                        $!bot.sendMessage(chat_id => $msg.chat.id, text => $text);
+                        $.bot.sendMessage(chat_id => $msg.chat.id, text => $text);
                     }
                 }
             }
             whenever signal(SIGINT) {
-                $!bot.stop;
+                $.bot.stop;
                 exit;
             }
         }

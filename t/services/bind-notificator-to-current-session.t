@@ -2,14 +2,14 @@ use lib 'lib';
 
 use Test;
 use Test::CodeGolf::Utils;
-use CodeGolf::Service::StartGolf;
+use CodeGolf::Service::BindNotificatorToCurrentSession;
 
 my $storage = get-tmp-storage();
 
 sub run-my-service(%params, %context = {}) {
-      my $service = CodeGolf::Service::StartGolf.new(
+      my $service = CodeGolf::Service::BindNotificatorToCurrentSession.new(
           user-id     => 'koorchik',
-          session-id  => 'aaaa',
+          session-id  => 'test-session-123',
           user-role   => 'ADMIN',
           storage     => $storage,
           notificator => get-notificator-mock($storage, my $bot),
@@ -21,21 +21,10 @@ sub run-my-service(%params, %context = {}) {
 }
 
 subtest {
-    my %golf = run-my-service({name => 'MyTestGolf'});
+    my %data = run-my-service({name => 'MyTestGolf'});
 
-    is %golf<name>, 'MyTestGolf', "Golf name is set";
-    isa-ok %golf<id>, Int, "Golf id is Int";
-    ok %golf<is-active>, "Golf is active";
-    ok %golf<started-at>, "Golf has started-at";
-
-}, "Positive: should return new golf";
-
-
-subtest {
-    throws-like { run-my-service({}) },
-        CodeGolf::Service::X::ValidationError,
-        errors => {name => 'REQUIRED'};
-}, "Negative: should require name";
+    is %data<session-id>, 'test-session-123', "Session ID is set";
+}, "Positive: should return bound session";
 
 
 subtest {

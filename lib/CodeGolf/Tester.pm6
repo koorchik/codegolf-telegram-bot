@@ -55,7 +55,7 @@ class CodeGolf::Tester {
             '/codegolf/script.code',
             $input;
 
-        # // TODO: Add timeouts
+        # TODO: Add timeouts
         my $proc = run @command, :out, :err;
 
         return {
