@@ -1,15 +1,21 @@
 use Telegram;
 use CodeGolf::Storage;
+use CodeGolf::Tester;
 use CodeGolf::Telegram::ServiceDispatcher;
+use CodeGolf::Telegram::Notificator;
 
 my %COMMANDS =
     'submit' => {
         service-class      => 'CodeGolf::Service::SubmitResult',
         params-rx          => rx/"/"\w+\s+ $<source-code>=[.*] \s*/,
-        response-formatter => { "" }
+        response-formatter => -> %r { "Length '{%r<code-length>}' saved! ID={%r<id>}" }
     },
     'rating' => {
-        service-class => 'CodeGolf::Service::ShowRating'
+        service-class => 'CodeGolf::Service::ShowRating',
+        response-formatter => -> @results {
+            my $i = 1;
+            @results.map({ "{$i++}. $^r<user-id>: $^r<code-length>" }).join("\n")
+        }
     },
     'startGolf' => {
         service-class      => 'CodeGolf::Service::StartGolf',
@@ -23,37 +29,58 @@ my %COMMANDS =
     },
     'setGolfTests' => {
         service-class => 'CodeGolf::Service::SetGolfTests',
-        params-rx     => rx/"/"\w+\s+ $<url>=[.*] \s*/
+        params-rx     => rx/"/"\w+\s+ $<url>=[.*] \s*/,
+        response-formatter => { "Golf tests refetched!" }
     },
-    'ratingsWithSources' => {
-        service-class => 'CodeGolf::Service::ShowRatingWithScores'
+    'ratingWithSources' => {
+        service-class => 'CodeGolf::Service::ShowRatingWithSources',
+        response-formatter => -> @results {
+            my $i = 1;
+            @results.map({ "{$i++}. $^r<user-id>: $^r<code-length>\nSOURCE: $^r<source-code>" }).join("\n")
+        }
     },
     'notifyHere' => {
-        service-class => 'CodeGolf::Service::BindNotificatorToCurrentSession'
-    }
+        service-class => 'CodeGolf::Service::BindNotificatorToCurrentSession',
+        response-formatter => { "Notifications enabled" }
+    },
+    # 'help' => {
+    #     service-class => 'CodeGolf::Service::Help,
+    #     response-formatter => { "SupportedCommands" }
+    # }
 ;
 
 class CodeGolf::Telegram::BotApp {
     has $.telegram-bot-token is required;
     has @.golf-admins is required;
-    # has $.tests-docker-image is required;
+    has $.tests-docker-image is required;
 
     has $!storage = CodeGolf::Storage.new();
+    has $!tester  = CodeGolf::Tester.new( docker-image => $!tests-docker-image );
+    has $!bot     = Telegram::Bot.new($!telegram-bot-token);
+    has $!notificator = CodeGolf::Telegram::Notificator.new(
+        bot     => $!bot,
+        storage => $!storage
+    );
+
     has $!dispatcher = CodeGolf::Telegram::ServiceDispatcher.new(
-        telegram-bot-token => $!telegram-bot-token,
-        commands           => %COMMANDS,
-        context-builder    => sub ($msg) {
-           return {
-              storage    => $!storage,
-              user-id    => $msg.sender.username,
-              user-role  => 'ADMIN',
-              session-id => $msg.chat.id,
+        commands        => %COMMANDS,
+        bot             => $!bot,
+        context-builder => sub ($msg) {
+            my $user-id = $msg.sender.username;
+
+            return {
+                notificator => $!notificator,
+                storage     => $!storage,
+                tester      => $!tester,
+                user-id     => $user-id,
+                user-role   => $user-id ∈ @!golf-admins ?? 'ADMIN' !! 'USER',
+                session-id  => $msg.chat.id,
            };
         }
     );
 
     method start() {
-        "Starting bot...".say;
+        "START BOT".say;
 
         $!storage.init;
         $!dispatcher.start;

@@ -1,17 +1,23 @@
 use CodeGolf::Service::Base;
 
 class CodeGolf::Service::SetGolfName is CodeGolf::Service::Base {
-    has @.allowed-roles = 'ADMIN', 'USER';
+    has @.allowed-roles = 'ADMIN';
 
     has %.validation-rules = {
         name => ["required", "string", {max_length => 128}]
     };
 
     method execute(%params) {
-        my %golf = self.storage.find-active-golf();
+        my %golf = $.storage.find-active-golf();
+        $.storage.update-golf( %golf<id>, { name => %params<name> } );
+        my %updated-golf = $.storage.find-active-golf();
 
-        self.storage.update-golf( %golf<id>, { name => %params<name> } );
-
-        return %golf;
+        return {
+            id          => %updated-golf<id>,
+            name        => %updated-golf<name>,
+            is-active   => %updated-golf<is-active>,
+            started-at  => %updated-golf<started-at>,
+            finished-at => %updated-golf<finished-at>
+        };
     }
 }
