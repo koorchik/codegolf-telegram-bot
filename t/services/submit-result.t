@@ -69,5 +69,4 @@ subtest {
         errors => {source-code => 'TESTING_FAILED'};
 }, "Negative: syntax error";
 
-
 done-testing;

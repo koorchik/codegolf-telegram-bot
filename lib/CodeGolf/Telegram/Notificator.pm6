@@ -38,13 +38,11 @@ class CodeGolf::Telegram::Notificator {
             ?? "{$new-position++}. $last<user-id>: $last<code-length> (was $prev<code-length>)"
             !! "{$new-position++}. $last<user-id>: $last<code-length> (NEW)";
 
-        "SEND TO {%settings<session-id>}, MESSAGE {$message}".say;
-
         $.bot.sendMessage(
             chat_id => %settings<session-id>,
             text => self!url-escape($message)
         );
-    } 
+    }
 
     method !url-escape($str) {
         return $str.subst(/<-alnum>/, *.ord.fmt("%%%02X"), :g);
