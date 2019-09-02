@@ -8,7 +8,8 @@
     "LIVR",
     "Telegram",
     "DBIish",
-    "File::Temp"
+    "File::Temp",
+    "Cro::HTTP"
   ],
   "description" : "",
   "license" : "Artistic-2.0",

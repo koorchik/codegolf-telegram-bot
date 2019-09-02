@@ -29,7 +29,8 @@ my %COMMANDS =
     },
     'setGolfTests' => {
         service-class => 'CodeGolf::Service::SetGolfTests',
-        params-rx     => rx/"/"\w+\s+ $<url>=[.*] \s*/
+        params-rx     => rx/"/"\w+\s+ $<url>=[.*] \s*/,
+        response-formatter => { "Golf tests refetched!" }
     },
     'ratingWithSources' => {
         service-class => 'CodeGolf::Service::ShowRatingWithSources',
