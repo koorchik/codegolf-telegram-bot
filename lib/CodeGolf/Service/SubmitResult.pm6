@@ -3,11 +3,11 @@ use CodeGolf::Tester;
 use CodeGolf::Service::X::ValidationError;
 
 class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
-    has @.allowed-roles = 'ADMIN', 'USER';
+    my @.allowed-roles = 'ADMIN', 'USER';
 
-    has %.validation-rules = {
+    my %.validation-rules =
         source-code => ["required", "string", {max_length => 500}]
-    };
+    ;
 
     method execute(%params) {
         my @tests = (

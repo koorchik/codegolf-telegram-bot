@@ -1,11 +1,11 @@
 use CodeGolf::Service::Base;
 
 class CodeGolf::Service::SetGolfName is CodeGolf::Service::Base {
-    has @.allowed-roles = 'ADMIN';
+    my @.allowed-roles = 'ADMIN';
 
-    has %.validation-rules = {
+    my %.validation-rules =
         name => ["required", "string", {max_length => 128}]
-    };
+    ;
 
     method execute(%params) {
         my %golf = $.storage.find-active-golf();

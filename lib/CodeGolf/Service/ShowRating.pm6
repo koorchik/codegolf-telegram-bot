@@ -1,8 +1,8 @@
 use CodeGolf::Service::Base;
 
 class CodeGolf::Service::ShowRating is CodeGolf::Service::Base {
-    has @.allowed-roles = 'ADMIN', 'USER';
-    has %.validation-rules = {};
+    my @.allowed-roles = 'ADMIN', 'USER';
+    my %.validation-rules;
 
     method execute(%params) {
         my %golf = $.storage.find-active-golf();

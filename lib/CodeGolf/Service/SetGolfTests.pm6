@@ -3,11 +3,11 @@ use JSON::Tiny;
 use Cro::HTTP::Client;
 
 class CodeGolf::Service::SetGolfTests is CodeGolf::Service::Base {
-    has @.allowed-roles = 'ADMIN';
+    my @.allowed-roles = 'ADMIN';
 
-    has %.validation-rules = {
+    my %.validation-rules =
         url => ["required", "string", "url"]
-    };
+    ;
 
     method execute(%params) {
         my $resp = await Cro::HTTP::Client.get(%params<url>);

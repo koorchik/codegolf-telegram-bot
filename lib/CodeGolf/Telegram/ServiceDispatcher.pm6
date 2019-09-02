@@ -39,7 +39,7 @@ class CodeGolf::Telegram::ServiceDispatcher {
 
     method !dispatch($msg) {
         if $msg.text ~~ /^"/"(\w+)/ {
-            (my $service-class, my $params-rx, my $response-formatter)
+            my ($service-class, $params-rx, $response-formatter)
                 = %.commands{$0}{"service-class", "params-rx", "response-formatter"};
 
             return "" unless $service-class;

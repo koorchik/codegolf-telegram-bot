@@ -16,7 +16,7 @@ class CodeGolf::Telegram::Notificator {
         my @results = $.storage.find-golf-results( %golf<id> );
 
         # Find last two results
-        (my $last, my $prev) = @results.grep(
+        my ($last, $prev) = @results.grep(
             *<user-id> eq $user-id
         ).sort(-*<id>)[0,1];
 
