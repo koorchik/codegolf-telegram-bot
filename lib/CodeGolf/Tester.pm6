@@ -1,10 +1,5 @@
 use File::Temp;
-
-class CodeGolf::Tester::X is Exception {
-    has $.input is required;
-    has $.expected is required;
-    has $.got is required;
-}
+use X::CodeGolf::Tester;
 
 class CodeGolf::Tester {
     has $.docker-image is required;
@@ -26,7 +21,7 @@ class CodeGolf::Tester {
           !! %result<out>;
 
         if $got ne $expected {
-            CodeGolf::Tester::X.new(
+            X::CodeGolf::Tester.new(
                 input    => $input,
                 expected => $expected,
                 got      => $got

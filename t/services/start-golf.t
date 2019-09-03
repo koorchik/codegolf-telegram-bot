@@ -33,14 +33,14 @@ subtest {
 
 subtest {
     throws-like { run-my-service({}) },
-        CodeGolf::Service::X::ValidationError,
+        X::CodeGolf::Service::ValidationError,
         errors => {name => 'REQUIRED'};
 }, "Negative: should require name";
 
 
 subtest {
     throws-like { run-my-service({}, { user-role => 'USER' }) },
-        CodeGolf::Service::X::NotEnoughPermissions;
+        X::CodeGolf::Service::NotEnoughPermissions;
 }, "Negative: USER not allowed to use this service";
 
 done-testing;

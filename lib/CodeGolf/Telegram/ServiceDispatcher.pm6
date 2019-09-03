@@ -1,4 +1,4 @@
-use CodeGolf::Service::X::Base;
+use X::CodeGolf::Service::Base;
 
 class CodeGolf::Telegram::ServiceDispatcher {
     has $.bot is required;
@@ -18,7 +18,7 @@ class CodeGolf::Telegram::ServiceDispatcher {
                 }
 
                 CATCH {
-                    when CodeGolf::Service::X::Base {
+                    when X::CodeGolf::Service::Base {
                         my $text = self!url-escape(.message);
                         $.bot.sendMessage(chat_id => $msg.chat.id, text => $text);
                     }

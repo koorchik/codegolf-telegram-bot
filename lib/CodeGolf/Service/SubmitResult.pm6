@@ -1,6 +1,7 @@
 use CodeGolf::Service::Base;
 use CodeGolf::Tester;
-use CodeGolf::Service::X::ValidationError;
+use X::CodeGolf::Service::ValidationError;
+use X::CodeGolf::Tester;
 use JSON::Tiny;
 
 class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
@@ -14,7 +15,7 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
         my %golf = $.storage.find-active-golf();
         my $tests = from-json( %golf<tests> );
 
-        CodeGolf::Service::X::ValidationError.new(
+        X::CodeGolf::Service::ValidationError.new(
             errors => {
               source-code => 'NO_TESTS'
             }
@@ -40,8 +41,8 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
         };
 
         CATCH {
-            when CodeGolf::Tester::X {
-                CodeGolf::Service::X::ValidationError.new(
+            when X::CodeGolf::Tester {
+                X::CodeGolf::Service::ValidationError.new(
                     errors => {
                       source-code => 'TESTING_FAILED'
                     }

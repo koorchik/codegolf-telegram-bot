@@ -1,5 +1,5 @@
 use CodeGolf::Service::Base;
-use CodeGolf::Service::X::ValidationError;
+use X::CodeGolf::Service::ValidationError;
 use JSON::Tiny;
 use Cro::HTTP::Client;
 use LIVR;
@@ -32,12 +32,12 @@ class CodeGolf::Service::SetGolfTests is CodeGolf::Service::Base {
 
         CATCH {
             when X::Cro::HTTP::Error::Client {
-                CodeGolf::Service::X::ValidationError.new(
+                X::CodeGolf::Service::ValidationError.new(
                     errors => { url => 'FETCHING_ERROR' }
                 ).throw;
             }
             when X::JSON::Tiny::Invalid {
-                CodeGolf::Service::X::ValidationError.new(
+                X::CodeGolf::Service::ValidationError.new(
                     errors => { url => 'JSON_PARSING_ERROR' }
                 ).throw;
             }
@@ -55,7 +55,7 @@ class CodeGolf::Service::SetGolfTests is CodeGolf::Service::Base {
         my $valid-data = $validator.validate({tests => $tests});
 
         unless $valid-data.defined {
-            CodeGolf::Service::X::ValidationError.new(
+            X::CodeGolf::Service::ValidationError.new(
                 errors => {url => 'WRONG_JSON_STRUCTURE'}
             ).throw;
         }

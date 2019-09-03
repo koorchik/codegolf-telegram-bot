@@ -60,13 +60,13 @@ subtest {
 
 subtest {
     throws-like { run-my-service({source-code => 'console.log(process.argv[2]*3)'}) },
-         CodeGolf::Service::X::ValidationError,
+         X::CodeGolf::Service::ValidationError,
          errors => {source-code => 'TESTING_FAILED'};
 }, "Negative: wrong output";
 
 subtest {
     throws-like { run-my-service({source-code => 'not a code'}) },
-         CodeGolf::Service::X::ValidationError,
+         X::CodeGolf::Service::ValidationError,
         errors => {source-code => 'TESTING_FAILED'};
 }, "Negative: syntax error";
 
@@ -75,7 +75,7 @@ subtest {
     $factory.storage.update-golf(%golf<id>, { tests => '[]'});
 
     throws-like { run-my-service({source-code => 'console.log(process.argv[2]*3)'}) },
-         CodeGolf::Service::X::ValidationError,
+         X::CodeGolf::Service::ValidationError,
          errors => {source-code => 'NO_TESTS'};
 }, "Negative: wrong output";
 

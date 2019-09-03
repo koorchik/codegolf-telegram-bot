@@ -34,7 +34,7 @@ subtest {
     my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/t/fixtures/tests-wrong-json-structure.json';
 
     throws-like { run-my-service({url => $tests-url}) },
-            CodeGolf::Service::X::ValidationError,
+            X::CodeGolf::Service::ValidationError,
             errors => {url => 'WRONG_JSON_STRUCTURE'};
 }, "Negative: Wrong JSON structure";
 
@@ -42,7 +42,7 @@ subtest {
     my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/README.md';
 
     throws-like { run-my-service({url => $tests-url}) },
-            CodeGolf::Service::X::ValidationError,
+            X::CodeGolf::Service::ValidationError,
             errors => {url => 'JSON_PARSING_ERROR'};
 }, "Negative: Fetch not JSON";
 
@@ -50,24 +50,24 @@ subtest {
     my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/nofile.json';
 
     throws-like { run-my-service({url => $tests-url}) },
-            CodeGolf::Service::X::ValidationError,
+            X::CodeGolf::Service::ValidationError,
             errors => {url => 'FETCHING_ERROR'};
 }, "Negative: 404";
 
 subtest {
     throws-like { run-my-service({}) },
-        CodeGolf::Service::X::ValidationError,
+        X::CodeGolf::Service::ValidationError,
         errors => {url => 'REQUIRED'};
 
     throws-like { run-my-service({url => 'not a url'}) },
-            CodeGolf::Service::X::ValidationError,
+            X::CodeGolf::Service::ValidationError,
             errors => {url => 'WRONG_URL'};
 }, "Negative: validation-rules";
 
 
 subtest {
     throws-like { run-my-service({}, { user-role => 'USER' }) },
-        CodeGolf::Service::X::NotEnoughPermissions;
+        X::CodeGolf::Service::NotEnoughPermissions;
 }, "Negative: USER not allowed to use this service";
 
 done-testing;

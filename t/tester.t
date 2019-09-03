@@ -15,7 +15,7 @@ subtest {
 
 subtest {
     throws-like { $tester.run-all-tests("console.log(process.argv[2]*3)", @tests); },
-         CodeGolf::Tester::X,
+         X::CodeGolf::Tester,
          input    => '123',
          expected => "246\n",
          got      => "369\n"
@@ -23,7 +23,7 @@ subtest {
 
 subtest {
     throws-like { $tester.run-all-tests("not a code", @tests); },
-         CodeGolf::Tester::X,
+         X::CodeGolf::Tester,
          input    => '123',
          expected => "246\n",
          got      => /SyntaxError/

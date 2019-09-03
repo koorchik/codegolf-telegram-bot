@@ -1,6 +1,6 @@
-use CodeGolf::Service::X::Base;
+use X::CodeGolf::Service::Base;
 
-class CodeGolf::Service::X::ValidationError is CodeGolf::Service::X::Base {
+class X::CodeGolf::Service::ValidationError is X::CodeGolf::Service::Base {
     has %.errors is required;
 
     method message() {

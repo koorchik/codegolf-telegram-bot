@@ -1,8 +1,8 @@
 use LIVR;
 LIVR::Validator.default-auto-trim(True);
 
-use CodeGolf::Service::X::ValidationError;
-use CodeGolf::Service::X::NotEnoughPermissions;
+use X::CodeGolf::Service::ValidationError;
+use X::CodeGolf::Service::NotEnoughPermissions;
 
 subset UserRole where * eq "USER"|"ADMIN";
 
@@ -26,7 +26,7 @@ class CodeGolf::Service::Base {
         if $valid-params.defined {
             return $valid-params;
         } else {
-            CodeGolf::Service::X::ValidationError.new(
+            X::CodeGolf::Service::ValidationError.new(
                 errors => $validator.errors()
             ).throw;
         }
@@ -34,7 +34,7 @@ class CodeGolf::Service::Base {
 
     method check-permissions() {
         unless $.user-role ∈ @.allowed-roles {
-            CodeGolf::Service::X::NotEnoughPermissions.new.throw;
+            X::CodeGolf::Service::NotEnoughPermissions.new.throw;
         }
     }
 }
