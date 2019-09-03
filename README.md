@@ -1,7 +1,6 @@
 # codegolf-telegram-bot
-Code Golf Telegram Bot (can be used with any programming language)
 
-Work in progress!
+Code Golf Telegram Bot (can be used with any programming language)
 
 ## Installation
 1. Install Perl 6
