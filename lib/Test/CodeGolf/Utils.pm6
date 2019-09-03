@@ -5,7 +5,7 @@ use CodeGolf::Telegram::Notificator;
 
 sub get-tmp-storage is export {
     my ($filename) = tempfile("testdb-******.sqlite3", :!unlink);
-    my $storage = CodeGolf::Storage.new(dbpath => $filename);
+    my $storage = CodeGolf::Storage.new(db-path => $filename);
     $storage.init;
 
     $storage.save-notificator-setting({session-id => 'notification-session'});

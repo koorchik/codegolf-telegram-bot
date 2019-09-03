@@ -1,6 +1,7 @@
 use CodeGolf::Service::Base;
 use CodeGolf::Tester;
 use CodeGolf::Service::X::ValidationError;
+use JSON::Tiny;
 
 class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
     my @.allowed-roles = 'ADMIN', 'USER';
@@ -10,14 +11,16 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
     ;
 
     method execute(%params) {
-        my @tests = (
-            { "input" => "123",  "expected" => "246\n" },
-            { "input" => "1234", "expected" => "2468\n" }
-        );
-
-        $.tester.run-all-tests(%params<source-code>, @tests);
-
         my %golf = $.storage.find-active-golf();
+        my $tests = from-json( %golf<tests> );
+
+        CodeGolf::Service::X::ValidationError.new(
+            errors => {
+              source-code => 'NO_TESTS'
+            }
+        ).throw unless $tests.elems;
+
+        $.tester.run-all-tests(%params<source-code>, $tests);
         my $result-id = $.storage.insert-result(
             golf-id     => %golf<id>,
             user-id     => $.user-id,
@@ -38,14 +41,11 @@ class CodeGolf::Service::SubmitResult is CodeGolf::Service::Base {
 
         CATCH {
             when CodeGolf::Tester::X {
-              CodeGolf::Service::X::ValidationError.new(
-                  errors => {
-                    source-code => 'TESTING_FAILED'
-                  }
-              ).throw;
-            }
-            default {
-                die $_;
+                CodeGolf::Service::X::ValidationError.new(
+                    errors => {
+                      source-code => 'TESTING_FAILED'
+                    }
+                ).throw;
             }
         }
     }

@@ -1,14 +1,15 @@
 use DBIish;
 
 class CodeGolf::Storage {
-    has $.dbpath = 'codegolf-db.sqlite3';
-    has $!dbh = DBIish.connect("SQLite", :database($!dbpath));
+    has $.db-path is required;
+    has $!dbh = DBIish.connect("SQLite", :database($!db-path));
 
     method init() {
       $!dbh.do(q:to/STATEMENT/);
           CREATE TABLE IF NOT EXISTS golfs (
               id          INTEGER PRIMARY KEY,
               name        VARCHAR(255) NOT NULL,
+              tests       TEXT NOT NULL DEFAULT '[]',
               is_active   BOOLEAN NOT NULL DEFAULT 0,
               started_at  TEXT NOT NULL DEFAULT '',
               finished_at TEXT NOT NULL DEFAULT ''
@@ -59,10 +60,10 @@ class CodeGolf::Storage {
     }
 
     method update-golf(Int $id!, %fields!) {
-        my $sth = $!dbh.prepare(q:to/STATEMENT/);
-            UPDATE golfs SET name=? WHERE id=?
+        my $sth = $!dbh.prepare(qq:to/STATEMENT/);
+            UPDATE golfs SET {%fields.keys.map({"$_=?"}).join(' AND ')} WHERE id=?
         STATEMENT
-        $sth.execute(%fields<name>, $id);
+        $sth.execute(%fields.values, $id);
     }
 
     method activate-golf(Int $id!) {
@@ -74,7 +75,6 @@ class CodeGolf::Storage {
             UPDATE golfs SET is_active=1,started_at=DATETIME('now') WHERE id=?
         STATEMENT
 
-        "ACTIVE $id".say;
         $sth.execute($id);
     }
 

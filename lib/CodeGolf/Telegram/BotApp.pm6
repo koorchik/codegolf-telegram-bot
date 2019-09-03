@@ -53,8 +53,9 @@ class CodeGolf::Telegram::BotApp {
     has $.telegram-bot-token is required;
     has @.golf-admins is required;
     has $.tests-docker-image is required;
+    has $.db-path is required;
 
-    has $!storage = CodeGolf::Storage.new();
+    has $!storage = CodeGolf::Storage.new( db-path => $!db-path );
     has $!tester  = CodeGolf::Tester.new( docker-image => $!tests-docker-image );
     has $!bot     = Telegram::Bot.new($!telegram-bot-token);
     has $!notificator = CodeGolf::Telegram::Notificator.new(

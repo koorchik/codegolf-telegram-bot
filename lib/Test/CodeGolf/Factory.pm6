@@ -1,4 +1,5 @@
 use Test::CodeGolf::Utils;
+use JSON::Tiny;
 
 class Test::CodeGolf::Factory {
     has $.storage = get-tmp-storage();
@@ -6,6 +7,10 @@ class Test::CodeGolf::Factory {
     method setup-golf {
         my $id = $.storage.insert-golf(name => 'MyGolf');
         $.storage.activate-golf($id);
+        $.storage.update-golf($id, { tests => to-json([
+            { "input" => "123",  "expected" => "246\n" },
+            { "input" => "1234", "expected" => "2468\n" }
+        ])});
     }
 
     method setup-results {

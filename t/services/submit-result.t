@@ -57,6 +57,7 @@ subtest {
     like $bot.last-message, rx/"was"/, "Shoud contain 'was'";
 }, "Positive: should notify-changes";
 
+
 subtest {
     throws-like { run-my-service({source-code => 'console.log(process.argv[2]*3)'}) },
          CodeGolf::Service::X::ValidationError,
@@ -68,5 +69,14 @@ subtest {
          CodeGolf::Service::X::ValidationError,
         errors => {source-code => 'TESTING_FAILED'};
 }, "Negative: syntax error";
+
+subtest {
+    my %golf = $factory.storage.find-active-golf;
+    $factory.storage.update-golf(%golf<id>, { tests => '[]'});
+
+    throws-like { run-my-service({source-code => 'console.log(process.argv[2]*3)'}) },
+         CodeGolf::Service::X::ValidationError,
+         errors => {source-code => 'NO_TESTS'};
+}, "Negative: wrong output";
 
 done-testing;

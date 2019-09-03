@@ -24,11 +24,35 @@ sub run-my-service(%params, %context = {}) {
 }
 
 subtest {
-    my %golf = run-my-service({url => 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/tests.json'});
+    my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/t/fixtures/correct-tests.json';
+    my %golf = run-my-service({ url => $tests-url });
 
     # is %golf<name>, 'MyGolfNewName', "Golf name is set";
 }, "Positive: should return new golf";
 
+subtest {
+    my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/t/fixtures/tests-wrong-json-structure.json';
+
+    throws-like { run-my-service({url => $tests-url}) },
+            CodeGolf::Service::X::ValidationError,
+            errors => {url => 'WRONG_JSON_STRUCTURE'};
+}, "Negative: Wrong JSON structure";
+
+subtest {
+    my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/README.md';
+
+    throws-like { run-my-service({url => $tests-url}) },
+            CodeGolf::Service::X::ValidationError,
+            errors => {url => 'JSON_PARSING_ERROR'};
+}, "Negative: Fetch not JSON";
+
+subtest {
+    my $tests-url = 'https://raw.githubusercontent.com/koorchik/codegolf-telegram-bot/master/nofile.json';
+
+    throws-like { run-my-service({url => $tests-url}) },
+            CodeGolf::Service::X::ValidationError,
+            errors => {url => 'FETCHING_ERROR'};
+}, "Negative: 404";
 
 subtest {
     throws-like { run-my-service({}) },
