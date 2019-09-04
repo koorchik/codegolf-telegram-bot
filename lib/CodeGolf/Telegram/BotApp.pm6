@@ -67,7 +67,7 @@ class CodeGolf::Telegram::BotApp {
         commands        => %COMMANDS,
         bot             => $!bot,
         context-builder => sub ($msg) {
-            my $user-id = $msg.sender.username;
+            my $user-id = $msg.sender.username || $msg.sender.id;
 
             return {
                 notificator => $!notificator,

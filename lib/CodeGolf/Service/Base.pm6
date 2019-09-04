@@ -5,13 +5,15 @@ use X::CodeGolf::Service::ValidationError;
 use X::CodeGolf::Service::NotEnoughPermissions;
 
 subset UserRole where * eq "USER"|"ADMIN";
+subset NotEmptyString where *.chars > 0;
 
 class CodeGolf::Service::Base {
     has $.storage is required;
     has $.notificator is required;
     has $.tester is required;
-    has $.user-id is required;
-    has $.session-id is required;
+
+    has NotEmptyString $.user-id is required;
+    has NotEmptyString $.session-id is required;
     has UserRole $.user-role is required;
 
     method run(%params) {
