@@ -15,6 +15,12 @@ With this bot you can make code golf competitions via telegram.
 
 ## Telegram bot usage
 
+1. Create new telegram bot.
+2. Create common chat for all golf participants and the bot to it.
+3. Start new golf.
+4. Participants should submit there result directly to bot chat. Not in group chat!
+
+
 ### USER commands
 
 * /submit <source-code>
